@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
 
 /**
  * Vite вшивает VITE_* только на этапе build.
@@ -30,7 +29,7 @@ if (!urlOk || !keyOk) {
   );
 }
 
-export const supabase = createClient<Database>(
+export const supabase = createClient(
   urlOk ? envUrl! : PROJECT_URL,
   keyOk ? envKey! : PUBLISHABLE_KEY,
 );

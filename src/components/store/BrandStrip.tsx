@@ -13,11 +13,12 @@ export default function BrandStrip() {
       .eq('is_active', true)
       .not('brand', 'is', null)
       .then(({ data }) => {
+        const rows = (data || []) as { brand: string | null }[];
         const uniq = [
           ...new Set(
-            (data || [])
-              .map((r) => (r.brand as string)?.trim())
-              .filter(Boolean),
+            rows
+              .map((r) => r.brand?.trim())
+              .filter((b): b is string => Boolean(b)),
           ),
         ].sort((a, b) => a.localeCompare(b, 'ru'));
         setBrands(uniq);
