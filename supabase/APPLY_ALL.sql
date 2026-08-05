@@ -1,0 +1,17 @@
+-- Paste into Supabase SQL Editor (Sanhehnika) in order, OR run each migration file separately:
+-- 1) supabase/migrations/001_aquamarket_schema.sql
+-- 2) supabase/migrations/002_consent_and_legal.sql
+-- 3) supabase/migrations/003_seed_catalog.sql
+-- 4) supabase/migrations/004_deals_gallery_admin.sql  ← акции дня, галереи, админ shyst.evgeny@mail.ru
+-- 5) supabase/migrations/005_security_hardening.sql  ← Security Advisor (RLS / grants / search_path)
+--
+-- Dashboard currently shows "No migrations" — until you run these, the shop has no tables.
+-- Project URL: https://jkogmgbxmcqtqdiwkbgh.supabase.co (eu-west-1 Ireland)
+
+-- After SQL:
+-- 1. Authentication → URL Configuration: set Site URL to your production domain (and localhost:5173 for dev)
+-- 2. Auth → Attack Protection: enable «Leaked password protection»
+-- 3. Auth email templates: switch to Russian if desired
+-- 4. Login as shyst.evgeny@mail.ru (role admin). Others: Admin → Пользователи → «Сделать админом»
+-- 5. Optional: deploy Edge Function notify-order + Database Webhook on public.orders
+-- 6. Fill УНП in Admin → Настройки before public launch
