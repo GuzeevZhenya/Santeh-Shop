@@ -2,7 +2,7 @@
 
 Интернет-магазин сантехники для **Беларуси (РБ)**. Валюта — белорусский рубль (BYN). Интерфейс на русском.
 
-**Репозиторий:** https://github.com/GuzeevZhenya/Santeh-Shop
+**Репозиторий:** https://santeh-shop-1tm23fulo-guzeevzhenya199602-6642s-projects.vercel.app/
 
 ## Стек
 
