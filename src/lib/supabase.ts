@@ -1,52 +1,36 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
+/**
+ * Vite вшивает VITE_* только на этапе build.
+ * На Vercel часто остаются плейсхолдеры / secret — поэтому URL и
+ * publishable-ключ заданы явно (anon/publishable предназначен для браузера + RLS).
+ */
 const PROJECT_URL = 'https://jkogmgbxmcqtqdiwkbgh.supabase.co';
+const PUBLISHABLE_KEY =
+  'sb_publishable_s073TrV0jKjPptLr3Djk7A_duwLEbX_';
 
-const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
-const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim();
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim();
 
-const urlIsPlaceholder =
-  !url || /your_project_ref|YOUR_PROJECT|placeholder\.supabase/i.test(url);
-
-const keyIsSecret =
-  !!anonKey &&
-  (anonKey.startsWith('sb_secret_') || anonKey.includes('service_role'));
-
-const keyIsMissing =
-  !anonKey ||
-  anonKey === 'placeholder' ||
-  anonKey.includes('your_anon');
+const urlOk =
+  !!envUrl &&
+  !/your_project_ref|YOUR_PROJECT|placeholder\.supabase/i.test(envUrl);
 
 const keyOk =
-  !!anonKey &&
-  !keyIsSecret &&
-  !keyIsMissing &&
-  (anonKey.startsWith('sb_publishable_') || anonKey.startsWith('eyJ'));
+  !!envKey &&
+  !envKey.startsWith('sb_secret_') &&
+  !envKey.includes('service_role') &&
+  !envKey.includes('your_anon') &&
+  (envKey.startsWith('sb_publishable_') || envKey.startsWith('eyJ'));
 
-if (urlIsPlaceholder || keyIsSecret || keyIsMissing || !keyOk) {
-  console.error(
-    '[AquaMarket] Неверные VITE_SUPABASE_* в этой сборке.\n' +
-      `  URL: ${url || '(пусто)'}\n` +
-      `  KEY: ${
-        keyIsSecret
-          ? 'SECRET — в браузере запрещён'
-          : keyIsMissing
-            ? '(пусто / заглушка)'
-            : anonKey?.startsWith('sb_publishable_')
-              ? 'publishable'
-              : anonKey?.startsWith('eyJ')
-                ? 'jwt anon'
-                : 'неизвестный формат'
-      }\n` +
-      'Vercel → Settings → Environment Variables (Production):\n' +
-      `  VITE_SUPABASE_URL=${PROJECT_URL}\n` +
-      '  VITE_SUPABASE_ANON_KEY=sb_publishable_... (как в локальном .env)\n' +
-      'Затем Deployments → ⋮ → Redeploy (без кэша).',
+if (!urlOk || !keyOk) {
+  console.warn(
+    '[AquaMarket] Vercel env некорректны — используется встроенный publishable-ключ проекта Sanhehnika.',
   );
 }
 
 export const supabase = createClient<Database>(
-  urlIsPlaceholder ? PROJECT_URL : url!,
-  keyOk ? anonKey! : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid',
+  urlOk ? envUrl! : PROJECT_URL,
+  keyOk ? envKey! : PUBLISHABLE_KEY,
 );
