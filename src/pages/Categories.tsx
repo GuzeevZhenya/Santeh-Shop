@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { categoryIcon } from '@/lib/categoryIcons';
+import { CATEGORY_CARD_CLASS, CATEGORY_GRID_CLASS } from '@/components/store/CategoryGrid';
 import type { Category } from '@/types/database';
 
 export default function Categories() {
@@ -37,18 +38,16 @@ export default function Categories() {
       <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Все категории</h1>
       <p className="text-slate-500 mb-8">Выберите раздел сантехники</p>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      <div className={CATEGORY_GRID_CLASS}>
         {cats.map((c) => {
           const Icon = categoryIcon(c.slug, c.icon);
           const n = counts[c.id] || 0;
           return (
-            <Link
-              key={c.id}
-              to={`/catalog/${c.id}`}
-              className="group flex flex-col items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-10 sm:py-12 text-center hover:border-[#2563EB]/50 hover:shadow-md transition-all"
-            >
-              <Icon className="w-10 h-10 text-[#2563EB] group-hover:scale-105 transition-transform" strokeWidth={1.5} />
-              <span className="text-base sm:text-lg font-semibold text-[#0F172A]">{c.name}</span>
+            <Link key={c.id} to={`/catalog/${c.id}`} className={CATEGORY_CARD_CLASS}>
+              <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-[#2563EB]" strokeWidth={1.5} />
+              <span className="text-sm font-medium text-[#0F172A] leading-snug">
+                {c.name}
+              </span>
               <span className="text-xs text-slate-400">
                 {n} {n === 1 ? 'товар' : n > 1 && n < 5 ? 'товара' : 'товаров'}
               </span>

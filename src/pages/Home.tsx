@@ -4,14 +4,15 @@ import { Flame, ArrowRight, Sparkles, Star, Truck, Shield, Tag } from 'lucide-re
 import ProductCard from '@/components/store/ProductCard';
 import CategoryGrid from '@/components/store/CategoryGrid';
 import BrandStrip from '@/components/store/BrandStrip';
+import HeroCarousel from '@/components/store/HeroCarousel';
 import ErrorState from '@/components/store/ErrorState';
-import Recommendations from '@/components/store/Recommendations';
 import { supabase } from '@/lib/supabase';
 import type { Product } from '@/types/database';
 
 const MAX = 8;
 const DEALS_MAX = 4;
 
+/** Главная по макету: Hero → Категории → Бренды → Промо → Акции → Бестселлеры → Преимущества → Новинки → CTA */
 export default function Home() {
   const [deals, setDeals] = useState<Product[]>([]);
   const [bestsellers, setBestsellers] = useState<Product[]>([]);
@@ -32,7 +33,6 @@ export default function Home() {
           return;
         }
         let list = (data as Product[]) || [];
-        // Добираем товары со скидкой, если акций дня мало
         if (list.length < DEALS_MAX) {
           const { data: discounted } = await supabase
             .from('products')
@@ -40,7 +40,7 @@ export default function Home() {
             .eq('is_active', true)
             .not('old_price', 'is', null)
             .order('rating', { ascending: false })
-            .limit(DEALS_MAX);
+            .limit(12);
           const ids = new Set(list.map((p) => p.id));
           for (const p of (discounted as Product[]) || []) {
             if (list.length >= DEALS_MAX) break;
@@ -78,21 +78,25 @@ export default function Home() {
 
   return (
     <div>
-      <BrandStrip />
       <HeroCarousel />
+
       <CategoryGrid showAllCard />
+
+      <BrandStrip />
 
       <section className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between gap-4 bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white rounded-xl px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Tag className="w-6 h-6" />
-            <p className="font-medium">
-              Промокод <span className="font-mono font-bold bg-white/20 px-2 py-0.5 rounded">NEW5</span> — скидка 5% на первый заказ
+          <div className="flex items-center gap-3 min-w-0">
+            <Tag className="w-6 h-6 shrink-0" />
+            <p className="font-medium text-sm sm:text-base">
+              Промокод{' '}
+              <span className="font-mono font-bold bg-white/20 px-2 py-0.5 rounded">NEW5</span>
+              {' '}— скидка 5% на первый заказ
             </p>
           </div>
           <Link
             to="/catalog"
-            className="hidden sm:flex items-center gap-1.5 text-sm font-medium hover:gap-2.5 transition-all"
+            className="hidden sm:flex items-center gap-1.5 text-sm font-medium hover:gap-2.5 transition-all shrink-0"
           >
             В каталог <ArrowRight className="w-4 h-4" />
           </Link>
@@ -131,7 +135,7 @@ export default function Home() {
             {
               icon: Truck,
               t: 'Доставка по Жлобину',
-              d: 'Бесплатно от 150 руб., по району — по согласованию.',
+              d: 'Бесплатно по городу при заказе от 150 руб., по району — по согласованию.',
             },
             {
               icon: Shield,
@@ -143,10 +147,10 @@ export default function Home() {
               t: 'Скидки для клиентов',
               d: 'Персональная скидка за каждую покупку и промокоды.',
             },
-          ].map((f, idx) => {
+          ].map((f) => {
             const I = f.icon;
             return (
-              <div key={idx} className="flex items-start gap-4">
+              <div key={f.t} className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                   <I className="w-6 h-6 text-[#60A5FA]" />
                 </div>
@@ -172,7 +176,25 @@ export default function Home() {
         )}
       </Section>
 
-      <Recommendations />
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F172A] to-[#1E3A5F] text-white p-10 md:p-14">
+          <div className="relative max-w-lg">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">
+              Создаём ванные комнаты мечты
+            </h2>
+            <p className="text-slate-300 mb-6 leading-relaxed">
+              Подберём сантехнику под ваш интерьер и бюджет. Загляните в наш магазин по ул. Барташова 1,
+              Жлобин.
+            </p>
+            <Link
+              to="/catalog"
+              className="inline-block bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-medium px-7 py-3.5 rounded-lg transition-colors"
+            >
+              Выбрать сантехнику
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -211,14 +233,4 @@ function Section({
 
 function Grid({ children }: { children: React.ReactNode }) {
   return <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">{children}</div>;
-}
-
-function SkeletonGrid({ n }: { n: number }) {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-      {[...Array(n)].map((_, i) => (
-        <div key={i} className="aspect-[4/5] rounded-xl bg-[#F8FAFC] animate-pulse" />
-      ))}
-    </div>
-  );
 }

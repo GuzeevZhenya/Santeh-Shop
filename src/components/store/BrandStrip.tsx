@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 
-/** Бегущая строка брендов из каталога (как на витрине) */
+/** Лента брендов из каталога — светлая полоса как на макете */
 export default function BrandStrip() {
   const [brands, setBrands] = useState<string[]>([]);
 
@@ -29,13 +29,13 @@ export default function BrandStrip() {
   const loop = [...brands, ...brands, ...brands];
 
   return (
-    <div className="border-y border-slate-100 bg-white overflow-hidden py-5">
+    <div className="bg-[#F1F5F9] overflow-hidden py-5">
       <div className="animate-marquee flex w-max items-center gap-10 md:gap-14 px-4">
         {loop.map((b, i) => (
           <Link
             key={`${b}-${i}`}
             to={`/search?q=${encodeURIComponent(b)}`}
-            className="shrink-0 text-sm md:text-base font-semibold tracking-wide text-slate-300 hover:text-[#0F172A] transition-colors uppercase"
+            className="shrink-0 text-sm md:text-base font-semibold tracking-wide text-slate-400 hover:text-[#0F172A] transition-colors uppercase"
           >
             {b}
           </Link>
